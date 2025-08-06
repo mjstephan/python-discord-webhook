@@ -116,8 +116,9 @@ class AsyncDiscordWebhook(DiscordWebhook):
         if remove_embeds:
             self.remove_embeds()
         self.remove_files(clear_attachments=False)
-        if webhook_id := json.loads(response.content.decode("utf-8")).get("id"):
-            self.id = webhook_id
+        if response.content:  # don't parse if response has no content (204 response code)
+            if webhook_id := json.loads(response.content.decode("utf-8")).get("id"):
+                self.id = webhook_id
         return response
 
     async def edit(self) -> "httpx.Response":
