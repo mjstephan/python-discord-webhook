@@ -470,11 +470,12 @@ class DiscordWebhook:
         if remove_embeds:
             self.remove_embeds()
         self.remove_files(clear_attachments=False)
-        response_content = json.loads(response.content.decode("utf-8"))
-        if webhook_id := response_content.get("id"):
-            self.id = webhook_id
-        if attachments := response_content.get("attachments"):
-            self.attachments = attachments
+        if response.content:  # don't parse if response has no content (204 response code)
+            response_content = json.loads(response.content.decode("utf-8"))
+            if webhook_id := response_content.get("id"):
+                self.id = webhook_id
+            if attachments := response_content.get("attachments"):
+                self.attachments = attachments
         return response
 
     def edit(self) -> "requests.Response":
